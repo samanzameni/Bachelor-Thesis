@@ -1,0 +1,22 @@
+new<-read.table("C:/Users/msi/Desktop/Heart.txt",sep = ",")
+X<-data.matrix(new, rownames.force = NA)
+scaling=TRUE
+dh<-dist(X)
+dh
+sh<-hclust(dh,"single")
+ch<-hclust(dh,"complete")
+ah<-hclust(dh,"average")
+oh<-hclust(dh,"centroid")
+wh<-hclust(dh,"ward.D")
+mh<-hclust(dh,"median")
+par(mfrow=c(2,2))
+plot(sh,hang=-1) 
+plot(ch,hang=-1) 
+plot(ah,hang=-1) 
+plot(oh,hang=-1)
+plot(wh,hang=-1)
+plot(mh,hang=-1)
+
+k<-kmeans(X,4)
+plot(X,col=k$cluster)
+points(k$centers,col=1, pch=3,cex=2)
