@@ -34,7 +34,49 @@ The class labels are never used for clustering; they are used only to evaluate t
 
 ## Results
 
-*To be added after the first full run of `run_all.R`.*
+The numbers and figures below were produced by `python/reproduce_results.py`, which implements the same linkages, rules and evaluation with SciPy and scikit-learn. The NbClust vote is R-only and is not included. Each cell shows **chosen *k* (ARI)**.
+
+**Breast Cancer Wisconsin (Euclidean, standardised)**
+
+| Rule | single | complete | average | Ward |
+|---|---|---|---|---|
+| Mojena α = 1.25 | 41 (0.03) | 46 (0.12) | 48 (0.44) | 30 (0.07) |
+| Mojena α = 2.00 | 25 (0.02) | 27 (0.27) | 26 (0.60) | 17 (0.14) |
+| Mojena α = 2.75 | 13 (0.02) | 13 (0.40) | 15 (0.10) | 11 (0.20) |
+| Mojena α = 3.50 | 11 (0.02) | 9 (0.54) | 9 (0.13) | 9 (0.28) |
+| Largest jump | 2 (0.00) | 3 (0.01) | 3 (0.00) | **2 (0.58)** |
+| Silhouette | 2 (0.00) | 2 (0.00) | 2 (0.01) | **2 (0.58)** |
+| *True k = 2* | *2 (0.00)* | *2 (0.00)* | *2 (0.01)* | *2 (0.58)* |
+
+**Cleveland Heart Disease (Gower)**
+
+| Rule | single | complete | average | Ward |
+|---|---|---|---|---|
+| Mojena α = 1.25 | 34 (0.02) | 39 (0.04) | 38 (0.08) | 19 (0.05) |
+| Mojena α = 2.00 | 8 (0.01) | 18 (0.07) | 16 (0.22) | 12 (0.09) |
+| Mojena α = 2.75 | 4 (0.00) | 10 (0.11) | 6 (0.32) | 7 (0.10) |
+| Mojena α = 3.50 | 2 (0.00) | 3 (0.09) | 2 (0.00) | 5 (0.15) |
+| Largest jump | 2 (0.00) | 2 (0.09) | 2 (0.00) | **2 (0.31)** |
+| Silhouette | 2 (0.00) | 10 (0.11) | 2 (0.00) | **2 (0.31)** |
+| *True k = 2* | *2 (0.00)* | *2 (0.09)* | *2 (0.00)* | *2 (0.31)* |
+
+**Cophenetic correlation and baselines**
+
+| | single | complete | average | Ward | Baseline at k = 2 |
+|---|---|---|---|---|---|
+| Breast cancer | 0.79 | 0.68 | **0.84** | 0.59 | k-means: ARI 0.67 |
+| Heart disease | 0.41 | 0.51 | **0.63** | 0.54 | PAM: ARI 0.39 |
+
+![Ward dendrogram of the breast cancer data with Mojena thresholds](figures/wdbc_ward_dendrogram.png)
+
+![Average silhouette width by linkage, breast cancer data](figures/wdbc_silhouette.png)
+
+### Findings
+
+1. **Mojena's rule over-segments these data sets.** With the recommended α = 1.25 it selects 19–48 clusters, even though each data set has two classes. Fusion heights in real data have a long right tail, so many merges exceed mean + 1.25·sd. Larger α values reduce *k*, but no single α works across linkages and data sets.
+2. **A high silhouette does not imply a meaningful partition.** At *k* = 2, single, complete and average linkage reach the highest silhouette values (≈ 0.66 on the breast cancer data), yet their ARI is about 0. These linkages split off 1–3 outlying observations and leave everything else in one cluster.
+3. **Ward linkage recovers the class structure best.** It produces balanced clusters (385/184 and 142/161), and both the largest-jump and the silhouette rule choose *k* = 2 with it, giving ARI 0.58 (breast cancer) and 0.31 (heart disease).
+4. **The best-fitting tree is not the most useful one.** Average linkage has the highest cophenetic correlation on both data sets but separates the classes poorly. On the breast cancer data, k-means (ARI 0.67) does slightly better than any hierarchical partition.
 
 ## Repository structure
 
@@ -46,7 +88,9 @@ R/stopping_rules.R         Mojena, largest-jump, silhouette and NbClust rules
 R/evaluation.R             cophenetic correlation, ARI, baselines
 R/plots.R                  dendrograms, fusion-height and silhouette plots
 tests/test_stopping_rules.R  checks the rules on synthetic data with 3 known clusters
+python/reproduce_results.py  Python implementation that produced the results above
 data/                      the two data sets as labelled CSV files
+results/, figures/         tables and figures reported in this README
 ```
 
 ## How to run
@@ -60,6 +104,13 @@ source("run_all.R")
 ```
 
 or from a terminal: `Rscript run_all.R`. Results are written to `results/` (CSV tables) and `figures/` (PNG plots). The random seed is fixed (`set.seed(42)`), so the k-means baseline is reproducible.
+
+To reproduce the reported results with Python instead:
+
+```bash
+pip install numpy pandas scipy scikit-learn matplotlib
+python python/reproduce_results.py
+```
 
 ## Data notes
 

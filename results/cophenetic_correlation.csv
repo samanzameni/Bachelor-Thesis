@@ -1,0 +1,9 @@
+dataset,linkage,cophenetic_correlation
+wdbc,single,0.7928393703053085
+wdbc,complete,0.6746361567456025
+wdbc,average,0.8410805218713046
+wdbc,ward.D2,0.5861877150648825
+heart,single,0.40882820999969777
+heart,complete,0.5082754384391063
+heart,average,0.6264110539787923
+heart,ward.D2,0.5378118649558103
