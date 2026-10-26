@@ -21,7 +21,7 @@ The class labels are never used for clustering; they are used only to evaluate t
 
 **Rules for choosing *k*:**
 
-- **Mojena's upper-tail rule:** stop at the first merge whose fusion height exceeds mean(h) + α·sd(h). Reported for α = 1.25 (Milligan & Cooper, 1985), 2.0, 2.75 and 3.5.
+- **Mojena's upper-tail rule:** stop at the first merge whose fusion height exceeds mean(h) + α·sd(h). Reported for α = 1.25 (the best value in Milligan & Cooper's 1985 simulation, p. 164), 2.0, and 2.75 and 3.5 (the range Mojena, 1977, recommended).
 - **Largest jump:** cut where the increase in fusion height between consecutive merges is largest (*k* = 2–10).
 - **Average silhouette width:** the *k* in 2–10 with the highest average silhouette (Rousseeuw, 1987).
 - **NbClust majority vote:** majority vote over six indices (CH, DB, silhouette, Hartigan, Duda–Hart, McClain). Euclidean data only.
@@ -73,8 +73,8 @@ The numbers and figures below were produced by `python/reproduce_results.py`, wh
 
 ### Findings
 
-1. **Mojena's rule over-segments these data sets.** With the recommended α = 1.25 it selects 19–48 clusters, even though each data set has two classes. Fusion heights in real data have a long right tail, so many merges exceed mean + 1.25·sd. Larger α values reduce *k*, but no single α works across linkages and data sets.
-2. **A high silhouette does not imply a meaningful partition.** At *k* = 2, single, complete and average linkage reach the highest silhouette values (≈ 0.66 on the breast cancer data), yet their ARI is about 0. These linkages split off 1–3 outlying observations and leave everything else in one cluster.
+1. **Mojena's rule over-segments these data sets.** With α = 1.25, the best value in Milligan & Cooper (1985), it selects 19–48 clusters, even though each data set has two classes. Mojena's own recommended range (2.75–3.5) still selects 9–15 clusters on the breast cancer data and 2–10 on the heart data; the two cases with *k* = 2 (heart, single and average linkage, α = 3.5) only split off outliers (ARI < 0.01). Fusion heights in real data have a long right tail, so many merges exceed mean + α·sd. Larger α values reduce *k*, but no single α in 0.25–4.0 gives *k* = 2 for all eight trees.
+2. **A high silhouette does not imply a meaningful partition.** At *k* = 2, single, complete and average linkage reach the highest silhouette values (≈ 0.66 on the breast cancer data), yet their ARI is about 0. On the breast cancer data, these linkages split off 2–3 outlying observations and leave everything else in one cluster. On the heart data, single and average linkage do the same (1 and 3 observations), while complete linkage gives a 54 / 249 split with ARI 0.09.
 3. **Ward linkage recovers the class structure best.** It produces balanced clusters (385/184 and 142/161), and both the largest-jump and the silhouette rule choose *k* = 2 with it, giving ARI 0.58 (breast cancer) and 0.31 (heart disease).
 4. **The best-fitting tree is not the most useful one.** Average linkage has the highest cophenetic correlation on both data sets but separates the classes poorly. On the breast cancer data, k-means (ARI 0.67) does slightly better than any hierarchical partition.
 

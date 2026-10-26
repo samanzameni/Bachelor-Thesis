@@ -10,7 +10,8 @@
 #' Stop at the first merge whose fusion height exceeds
 #'   mean(h) + alpha * sd(h),
 #' i.e. keep the partition that exists just before that merge.
-#' Milligan and Cooper (1985) recommend alpha = 1.25.
+#' alpha = 1.25 was the best constant in Milligan and Cooper's (1985, p. 164)
+#' simulation; Mojena (1977) himself recommended 2.75-3.50.
 #'
 #' @return number of clusters (integer)
 mojena_k <- function(hc, alpha = 1.25) {
